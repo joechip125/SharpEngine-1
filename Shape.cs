@@ -3,14 +3,14 @@ using System.Runtime.InteropServices;
 using static OpenGL.Gl;
 
 namespace SharpEngine {
-	public class Shape {
+	public abstract class Shape {
             
-		Vertex[] vertices;
+		public Vertex[] vertices;
 		Matrix transform = Matrix.Identity;
 		uint vertexArray;
 		uint vertexBuffer;
 
-		public float CurrentScale { get; private set; }
+		public float CurrentScale { get; protected set; }
 
 		public Material material;
             
@@ -56,7 +56,41 @@ namespace SharpEngine {
 
 			for (int i = 0; i < vertices.Length + numberToAdd; i++)
 			{
-				
+				newVert[i] = new Vertex(new Vector(0, 0), Color.Blue);
+			}
+		}
+
+		public void SetVectorPositions(float Width, float Height, float startDegree)
+		{
+			float degreeIncrement = 360 / vertices.Length;
+			float degrees = startDegree;
+
+			for (int i = 0; i < vertices.Length; i++)
+			{
+				float cos = MathF.Cos((MathF.PI / 180) * degrees);
+				float sin = MathF.Sin((MathF.PI / 180) * degrees);
+
+				vertices[i].position.x = cos * Width / 2;
+				vertices[i].position.y = sin * Height / 2;
+
+				degrees += degreeIncrement;
+			}
+		}
+        
+		public void SetVectorsCircle(float radius)
+		{
+			float degreeIncrement = 360 / vertices.Length;
+			float degrees = 0;
+
+			for (int i = 0; i < vertices.Length; i++)
+			{
+				float cos = MathF.Cos((MathF.PI / 180) * degrees);
+				float sin = MathF.Sin((MathF.PI / 180) * degrees);
+
+				vertices[i].position.x = cos * radius;
+				vertices[i].position.y = sin * radius;
+
+				degrees += degreeIncrement;
 			}
 		}
 		
@@ -86,6 +120,101 @@ namespace SharpEngine {
 
 		public void Rotate(float rotation) {
 			
+		}
+	}
+	
+	
+	public class Triangle : Shape
+	{
+		private float Width;
+		private float Height;
+		private Vector Position;
+		public Material material;
+        
+		public Triangle(Vertex[] vertices, Material material) : base( new Vertex []{ 
+			new Vertex(new Vector(-0.5f, -0.5f), Color.Red),
+			new Vertex(new Vector(0.5f, -0.5f), Color.Green),
+			new Vertex(new Vector(0f, 0.5f), Color.Blue)}, material)
+		{
+			this.vertices = vertices;
+			this.material = material;
+			this.CurrentScale = 1f;
+		}
+        
+		public Triangle(float width, float height, Vector position, Material material) : base( new Vertex []{ 
+			new Vertex(new Vector(-0.5f, -0.5f), Color.Red),
+			new Vertex(new Vector(0.5f, -0.5f), Color.Green),
+			new Vertex(new Vector(0f, 0.5f), Color.Blue)}, material)
+		{
+			Width = width;
+			Height = height;
+			Position = position;
+			SetVectorPositions(Width, Height, 90);
+			Move(position);
+		}
+
+	}
+	
+	public class Rectangle : Shape
+	{
+		public  Vertex[] Vertices;
+		private float Width;
+		private float Height;
+		private Vector Position;
+        
+     
+		public Rectangle(float width, float height, Vector position, Material material) : base (new Vertex []{ 
+			new Vertex(new Vector(-0.5f, -0.5f), Color.Red),
+			new Vertex(new Vector(0.5f, -0.5f), Color.Green),
+			new Vertex(new Vector(0.5f, 0.5f), Color.Blue),
+			new Vertex(new Vector(-0.5f, 0.5f), Color.Blue)
+		}, material)
+		{
+			Width = width;
+			Height = height;
+			Position = position;
+			SetVectorPositions(Width, Height, 45);
+			Move(position);
+		}
+	}
+    
+	public class Circle : Shape
+	{
+		public  Vertex[] Vertices;
+		private float Radius;
+		private Vector Position;
+        
+     
+		public Circle(float radius, Vector position, Material material) : base (new Vertex []{ 
+			new Vertex(new Vector(-0.5f, -0.5f), Color.Red),
+		}, material)
+		{
+
+			Radius = radius;
+			Position = position;
+            
+			AddVertices(16);
+			SetVectorsCircle(Radius); 
+			Move(position);
+		}
+	}
+    
+	public class Cone : Shape
+	{
+		public  Vertex[] Vertices;
+		private float Radius;
+		private float Angle;
+		private Vector Position;
+        
+     
+		public Cone(float radius, float angle, Vector position, Material material) : base (new Vertex []{ 
+			new Vertex(new Vector(-0.5f, -0.5f), Color.Red),
+			new Vertex(new Vector(0.5f, -0.5f), Color.Green),
+			new Vertex(new Vector(0f, 0.5f), Color.Blue)}, material)
+		{
+			Angle = angle;
+			Radius = radius;
+			Position = position;
 		}
 	}
 }
