@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using static OpenGL.Gl;
 
 namespace SharpEngine {
-	public class Triangle {
+	public class Shape {
             
 		Vertex[] vertices;
 		Matrix transform = Matrix.Identity;
@@ -14,7 +14,7 @@ namespace SharpEngine {
 
 		public Material material;
             
-		public Triangle(Vertex[] vertices, Material material) {
+		public Shape(Vertex[] vertices, Material material) {
 			this.vertices = vertices;
 			this.material = material;
 			LoadTriangleIntoBuffer();
@@ -50,6 +50,16 @@ namespace SharpEngine {
 			return max;
 		}
 
+		public void AddVertices(int numberToAdd)
+		{
+			Vertex[] newVert = new Vertex[vertices.Length + numberToAdd];
+
+			for (int i = 0; i < vertices.Length + numberToAdd; i++)
+			{
+				
+			}
+		}
+		
 		public Vector GetCenter() {
 			return (GetMinBounds() + GetMaxBounds()) / 2;
 		}
