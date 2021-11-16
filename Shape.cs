@@ -6,22 +6,23 @@ namespace SharpEngine {
 	public abstract class Shape {
             
 		public Vertex[] vertices;
-		Matrix transform = Matrix.Identity;
 		uint vertexArray;
 		uint vertexBuffer;
-
-		public float CurrentScale { get; protected set; }
+		public Transform Transform { get; }
 
 		public Material material;
             
-		public Shape(Vertex[] vertices, Material material) {
+		public Shape(Vertex[] vertices, Material material) 
+		{
 			this.vertices = vertices;
 			this.material = material;
-			LoadTriangleIntoBuffer();
-			this.CurrentScale = 1f;
+			LoadShapeIntoBuffer();
+
+			Transform = new Transform();
 		}
 		
-		 void LoadTriangleIntoBuffer() {
+		 void LoadShapeIntoBuffer() 
+		 {
 			vertexArray = glGenVertexArray();
 			vertexBuffer = glGenBuffer();
 			glBindVertexArray(vertexArray);
@@ -33,18 +34,22 @@ namespace SharpEngine {
 			glBindVertexArray(0);
 		}
 
-		public Vector GetMinBounds() {
-			var min = this.vertices[0].position;
-			for (var i = 1; i < this.vertices.Length; i++) {
-				min = Vector.Min(min, this.vertices[i].position);
+		public Vector GetMinBounds() 
+		{
+			var min = Transform.Matrix * vertices[0].position;
+			for (var i = 1; i < vertices.Length; i++) 
+			{
+				min = Vector.Min(min, Transform.Matrix * vertices[i].position);
 			}
 			return min;
 		}
             
-		public Vector GetMaxBounds() {
-			var max = this.vertices[0].position;
-			for (var i = 1; i < this.vertices.Length; i++) {
-				max = Vector.Max(max, this.vertices[i].position);
+		public Vector GetMaxBounds() 
+		{
+			var max = Transform.Matrix * vertices[0].position;
+			for (var i = 1; i < vertices.Length; i++) 
+			{
+				max = Vector.Max(max,  Transform.Matrix * vertices[i].position);
 			}
 
 			return max;
@@ -94,31 +99,28 @@ namespace SharpEngine {
 			}
 		}
 		
-		public Vector GetCenter() {
+		public Vector GetCenter()
+		{
 			return (GetMinBounds() + GetMaxBounds()) / 2;
 		}
 
-		public void Scale(float multiplier) {
-
-		}
-
-		public void Move(Vector direction) {
-			this.transform *= Matrix.Translation(direction);
-		}
-
-		public unsafe void Render() {
-			this.material.Use();
-			this.material.SetTransform(this.transform);
+	
+		public unsafe void Render() 
+		{
+			material.Use();
+			material.SetTransform(Transform.Matrix);
 			glBindVertexArray(vertexArray);
-			glBindBuffer(GL_ARRAY_BUFFER, this.vertexBuffer);
-			fixed (Vertex* vertex = &this.vertices[0]) {
-				glBufferData(GL_ARRAY_BUFFER, Marshal.SizeOf<Vertex>() * this.vertices.Length, vertex, GL_DYNAMIC_DRAW);
+			glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+			fixed (Vertex* vertex = &vertices[0]) 
+			{
+				glBufferData(GL_ARRAY_BUFFER, Marshal.SizeOf<Vertex>() * vertices.Length, vertex, GL_DYNAMIC_DRAW);
 			}
-			glDrawArrays(GL_TRIANGLES, 0, this.vertices.Length);
+			glDrawArrays(GL_TRIANGLES, 0, vertices.Length);
 			glBindVertexArray(0);
 		}
 
-		public void Rotate(float rotation) {
+		public void Rotate(float rotation) 
+		{
 			
 		}
 	}
@@ -138,7 +140,7 @@ namespace SharpEngine {
 		{
 			this.vertices = vertices;
 			this.material = material;
-			this.CurrentScale = 1f;
+		//	this.CurrentScale = 1f;
 		}
         
 		public Triangle(float width, float height, Vector position, Material material) : base( new Vertex []{ 
@@ -150,7 +152,7 @@ namespace SharpEngine {
 			Height = height;
 			Position = position;
 			SetVectorPositions(Width, Height, 90);
-			Move(position);
+		//	Move(position);
 		}
 
 	}
@@ -174,7 +176,7 @@ namespace SharpEngine {
 			Height = height;
 			Position = position;
 			SetVectorPositions(Width, Height, 45);
-			Move(position);
+		//	Move(position);
 		}
 	}
     
@@ -195,7 +197,7 @@ namespace SharpEngine {
             
 			AddVertices(16);
 			SetVectorsCircle(Radius); 
-			Move(position);
+		//	Move(position);
 		}
 	}
     
