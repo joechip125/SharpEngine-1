@@ -50,5 +50,11 @@ namespace SharpEngine {
 		public float GetMagnitude() {
 			return MathF.Sqrt(x * x + y * y + z * z);
 		}
+
+		public Vector Normalize()
+		{
+			float magTude = GetMagnitude();
+			return magTude > 0 ? this/ GetMagnitude() : this;
+		}
 	}
 }

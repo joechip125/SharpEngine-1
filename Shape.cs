@@ -3,7 +3,8 @@ using System.Runtime.InteropServices;
 using static OpenGL.Gl;
 
 namespace SharpEngine {
-	public abstract class Shape {
+	public abstract class Shape 
+	{
             
 		public Vertex[] vertices;
 		uint vertexArray;
@@ -133,14 +134,25 @@ namespace SharpEngine {
 		private Vector Position;
 		public Material material;
         
+		public Triangle(Material material) : base(CreateTriangle(), material) {
+		}
+
+		static Vertex[] CreateTriangle() {
+			const float scale = .1f;
+			float height = MathF.Sqrt(0.75f) * scale;
+			return new Vertex[] {
+				new Vertex(new Vector(-scale, -height/2), Color.Red),
+				new Vertex(new Vector(scale, -height/2), Color.Green),
+				new Vertex(new Vector(0f, height), Color.Blue)
+			};
+		}
+		
 		public Triangle(Vertex[] vertices, Material material) : base( new Vertex []{ 
 			new Vertex(new Vector(-0.5f, -0.5f), Color.Red),
 			new Vertex(new Vector(0.5f, -0.5f), Color.Green),
 			new Vertex(new Vector(0f, 0.5f), Color.Blue)}, material)
 		{
-			this.vertices = vertices;
-			this.material = material;
-		//	this.CurrentScale = 1f;
+			
 		}
         
 		public Triangle(float width, float height, Vector position, Material material) : base( new Vertex []{ 
@@ -164,6 +176,21 @@ namespace SharpEngine {
 		private float Height;
 		private Vector Position;
         
+		public Rectangle(Material material) : base(CreateRectangle(), material) {
+		}
+
+		static Vertex[] CreateRectangle() {
+			const float scale = .1f;
+			return new Vertex[] {
+				new Vertex(new Vector(-scale, -scale), Color.Red),
+				new Vertex(new Vector(scale, -scale), Color.Green),
+				new Vertex(new Vector(-scale, scale), Color.Blue),
+				new Vertex(new Vector(scale, -scale), Color.Green),
+				new Vertex(new Vector(scale, scale), Color.Red),
+				new Vertex(new Vector(-scale, scale), Color.Blue)
+			};
+		}
+		
      
 		public Rectangle(float width, float height, Vector position, Material material) : base (new Vertex []{ 
 			new Vertex(new Vector(-0.5f, -0.5f), Color.Red),
@@ -185,19 +212,44 @@ namespace SharpEngine {
 		public  Vertex[] Vertices;
 		private float Radius;
 		private Vector Position;
-        
-     
+
+		public Circle(Material material) : base(CreateCircle(), material) 
+		{
+		}
+		
+		static Vertex[] CreateCircle()
+		{
+			const int numberOfSegments = 32;
+			const int verticesPerSegment = 3;
+			const float scale = .1f;
+			Vertex[] result = new Vertex[numberOfSegments * verticesPerSegment];
+			const float circleRadians = MathF.PI * 2;
+			var oldAngle = 0f;
+			for (int i = 0; i < numberOfSegments; i++)
+			{
+				int currentVertex = i * verticesPerSegment;
+				var newAngle = circleRadians / numberOfSegments * (i + 1);
+				result[currentVertex++] = new Vertex(new Vector(), Color.Blue);
+				result[currentVertex++] = new Vertex(new Vector(MathF.Cos(oldAngle), MathF.Sin(oldAngle)) * scale,
+					Color.Green);
+				result[currentVertex] =
+					new Vertex(new Vector(MathF.Cos(newAngle), MathF.Sin(newAngle)) * scale, Color.Red);
+				oldAngle = newAngle;
+			}
+
+			return result;
+		}
+
 		public Circle(float radius, Vector position, Material material) : base (new Vertex []{ 
-			new Vertex(new Vector(-0.5f, -0.5f), Color.Red),
+			new Vertex(new Vector(-0.5f, -0.5f), Color.Red)
 		}, material)
 		{
-
 			Radius = radius;
 			Position = position;
             
 			AddVertices(16);
 			SetVectorsCircle(Radius); 
-		//	Move(position);
+		//	Transform.Move(position);
 		}
 	}
     
