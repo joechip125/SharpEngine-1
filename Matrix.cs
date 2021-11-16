@@ -77,8 +77,8 @@ namespace SharpEngine {
 			var result = Identity;
 			result.m22 = MathF.Cos(x);
 			result.m23 = -MathF.Sin(x);
-			result.m32 = MathF.Cos(x);
-			result.m33 = MathF.Sin(x);
+			result.m32 = MathF.Sin(x);
+			result.m33 = MathF.Cos(x);
 			return result;
 		}
 		

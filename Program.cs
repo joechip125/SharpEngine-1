@@ -45,8 +45,18 @@ namespace SharpEngine
             ground.Transform.Position = new Vector(0f, -1f);
             scene.Add(ground);
             
+            var enemy = new Rectangle(material);
+            enemy.Transform.Position = new Vector(0.5f, 0.5f);
+            scene.Add(enemy);
+            
+            var testCircle = new Circle(material);
+            testCircle.Transform.Position = new Vector(0f, 0.7f);
+            scene.Add(testCircle);
+            Vector circleVector = testCircle.Transform.Position;
+            circleVector = circleVector.Normalize();
+            
             // engine rendering loop
-         
+            float radianDifference = 0;
             const int fixedStepNumberPerSecond = 30;
             const float fixedDeltaTime = 1.0f / fixedStepNumberPerSecond;
             const float movementSpeed = 0.5f;
@@ -56,10 +66,18 @@ namespace SharpEngine
            {
                while (Glfw.Time > previousFixedStep + fixedDeltaTime)
                {
-
                    var walkDirection = new Vector();
                    previousFixedStep = Glfw.Time;
-                   // Update Triangles
+                   testCircle.SetColor(new Color(1* radianDifference / 3, 1* radianDifference / 3, 1* radianDifference / 3, 1));
+
+                   if (Vector.Dot(enemy.Transform.Position, shape.Transform.Forward) > 0)
+                   {
+                       enemy.SetColor(Color.Green);
+                   }
+                   else
+                   {
+                       enemy.SetColor(Color.Red);
+                   }
 
                    if (window.GetKey(Keys.W))
                    {
@@ -67,7 +85,7 @@ namespace SharpEngine
                    }
                    if (window.GetKey(Keys.S))
                    {
-                       walkDirection += Vector.Backward;
+                       walkDirection -= shape.Transform.Forward; 
                    }
                    if (window.GetKey(Keys.A))
                    {
@@ -93,6 +111,8 @@ namespace SharpEngine
 
                    walkDirection = walkDirection.Normalize();
                    shape.Transform.Position += walkDirection * movementSpeed * fixedDeltaTime;
+                   
+                   radianDifference = MathF.Acos(Vector.Dot(shape.Transform.Forward, circleVector));
                }
                window.Render();
            }
