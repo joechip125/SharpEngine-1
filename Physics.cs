@@ -1,4 +1,6 @@
-﻿namespace SharpEngine {
+﻿using System;
+
+namespace SharpEngine {
 	public class Physics {
 		readonly Scene scene;
 
@@ -6,10 +8,12 @@
 			this.scene = scene;
 		}
 
-		public void Update(float deltaTime) {
+		public void Update(float deltaTime) 
+		{
 			var gravitationalAcceleration = Vector.Down * 9.819649f * 0;
-			for (int i = 0; i < this.scene.shapes.Count; i++) {
-				Circle shape = this.scene.shapes[i] as Circle;
+			for (int i = 0; i < scene.shapes.Count; i++) 
+			{
+				Circle shape = scene.shapes[i] as Circle;
 				
 				// linear velocity:
 				shape.Transform.Position = shape.Transform.Position + shape.velocity * deltaTime;
@@ -21,17 +25,19 @@
 				acceleration += gravitationalAcceleration * shape.gravityScale;
 				
 				// linear acceleration:
-				shape.Transform.Position = shape.Transform.Position + acceleration * deltaTime * deltaTime / 2;
+				shape.Transform.Position = shape.Transform.Position + acceleration * MathF.Pow(deltaTime, 2)  / 2;
 				shape.velocity = shape.velocity + acceleration * deltaTime;
 				
 				// collision detection:
-				for (int j = i+1; j < this.scene.shapes.Count; j++) {
-					Circle other = this.scene.shapes[j] as Circle;
+				for (int j = i+1; j < scene.shapes.Count; j++) 
+				{
+					Circle other = scene.shapes[j] as Circle;
 					// check for collision
 					Vector deltaPosition = other.GetCenter() - shape.GetCenter();
 					bool collision = deltaPosition.GetMagnitude() < shape.Radius + other.Radius;
 
-					if (collision) {
+					if (collision) 
+					{
 						Vector collisionNormal = deltaPosition.Normalize();
 						Vector otherCollisionNormal = (shape.GetCenter() - other.GetCenter()).Normalize();
 						Vector collisionVelocity = Vector.Dot(shape.velocity, collisionNormal) * collisionNormal;
