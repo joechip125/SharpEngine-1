@@ -6,6 +6,7 @@ namespace SharpEngine {
 
 		public static Vector Forward => new Vector(0, 1, 0);
 		public static Vector Backward => new Vector(0, -1, 0);
+		public static Vector Down => new Vector(0, -1, 0);
 		public static Vector Left => new Vector(-1, 0, 0);
 		public static Vector Right => new Vector(1, 0, 0);
 
@@ -26,6 +27,10 @@ namespace SharpEngine {
 		public static float Dot(Vector a, Vector b)
 		{
 			return a.x * b.x + a.y * b.y + a.z * b.z;
+		}
+		
+		public static Vector operator *(float f, Vector v) {
+			return new Vector(f * v.x, f * v.y,f * v.z);
 		}
 		
 		public static Vector operator *(Vector v, float f) {

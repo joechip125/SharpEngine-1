@@ -10,9 +10,25 @@ namespace SharpEngine {
 		uint vertexArray;
 		uint vertexBuffer;
 		public Transform Transform { get; }
-
 		public Material material;
-            
+		
+		float mass = 1;
+		float massInverse = 1;
+
+		public float Mass {
+			get => this.mass;
+			set {
+				this.mass = value;
+				this.massInverse = float.IsPositiveInfinity(value) ? 0f : 1f / value;
+			}
+		}
+
+		public float MassInverse => this.massInverse;
+
+		public float gravityScale = 1f;
+		public Vector velocity; // momentum = product of velocity and mass
+		public Vector linearForce;
+
 		public Shape(Vertex[] vertices, Material material) 
 		{
 			this.vertices = vertices;
@@ -219,7 +235,7 @@ namespace SharpEngine {
 	public class Circle : Shape
 	{
 		public  Vertex[] Vertices;
-		private float Radius;
+		public float Radius => .1f;
 		private Vector Position;
 
 		public Circle(Material material) : base(CreateCircle(), material) 
@@ -253,7 +269,7 @@ namespace SharpEngine {
 			new Vertex(new Vector(-0.5f, -0.5f), Color.Red)
 		}, material)
 		{
-			Radius = radius;
+			
 			Position = position;
             
 			AddVertices(16);
